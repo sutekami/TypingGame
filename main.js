@@ -13,7 +13,7 @@ let num = 0; // id検索のカウンター
 document.addEventListener('keydown', function(e){
     if (strList[num] === e.key){
         let span = document.querySelector(`#str${num}`);
-        span.style.color = 'red';
+        span.style.color = 'rgba(49, 120, 212, 0.87)';
         num++;
         if (num === strList.length){
             num = 0;
@@ -27,12 +27,14 @@ document.addEventListener('keydown', function(e){
 function printStr(string){
     for (let i = 0; i < string.length; i++){
         if (string[i] === ' '){
-            div.append(' ');
+            p = document.createElement('p');
+            p.innerHTML = ' ';
+            div.append(p);
         }else{
-            let span = document.createElement('span');
-            span.innerHTML = string[i];
-            span.id = 'str' + count;
-            div.append(span);
+            let h1 = document.createElement('h1');
+            h1.innerHTML = string[i];
+            h1.id = 'str' + count;
+            div.append(h1);
             count++;
         }
     }
