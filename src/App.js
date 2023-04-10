@@ -6,15 +6,15 @@ import { io } from 'socket.io-client';
 function Home({ userName, setUserName, trueOrFalse, matching }) {
   function detectUserName() {
     const userName = document.getElementById('Home-username-text');
-    if (!userName.value){
+    if (!userName.value) {
       alert('ユーザー名を入力してください');
     } else {
       return setUserName(() => userName.value);
     }
   }
-  
+
   function matchingAndRemove() {
-    if (!userName){
+    if (!userName) {
       alert('ユーザー名を登録してください');
     } else {
       matching();
@@ -24,14 +24,22 @@ function Home({ userName, setUserName, trueOrFalse, matching }) {
   }
 
   function LogUserName() {
-    if (userName){
+    if (userName) {
       return userName;
     } else {
       return;
     }
   }
 
-  if (trueOrFalse){
+  function HomeMatchingButton() {
+    return (
+      <div id='Home-matching'>
+        <input type="button" value="マッチ開始" id="Home-matching-button" onClick={matchingAndRemove} />
+      </div>
+    );
+  }
+
+  if (trueOrFalse) {
     return (
       <div id="Home">
         <h1>Typing Game</h1>
@@ -39,9 +47,7 @@ function Home({ userName, setUserName, trueOrFalse, matching }) {
           <input type="text" placeholder="ユーザー名" id="Home-username-text" />
           <input type="button" value="登録" id="Home-username-button" onClick={detectUserName} />
         </div>
-        <div id="Home-matching">
-          <input type="button" value="マッチ開始" id="Home-matching-button" onClick={matchingAndRemove} />
-        </div>
+        <HomeMatchingButton />
         <div id="explain">
           自分の好きな名前を入力して登録してください
           <div>現在のユーザー名: <LogUserName /></div>
@@ -68,7 +74,7 @@ export default function App() {
 
   useEffect(() => {
     // ipの取得がわからないので、環境変える都度ローカルアドレスを変える
-    socketRef.current = io(`http://10.87.182.76:3001`);
+    socketRef.current = io(`http://192.168.11.15:3001`);
 
     socketRef.current.on('socket_id', data => {
       tokenRef.current = data;
@@ -81,15 +87,15 @@ export default function App() {
     socketRef.current.on('match', data => {
       const room_info = data.room_info;
       (room_info.user1.token === tokenRef.current) ? partnerNameRef.current = room_info.user2.userName
-      : partnerNameRef.current = room_info.user1.userName;
+        : partnerNameRef.current = room_info.user1.userName;
       setTypingStr(() => data.typingString);
       setTrueOrFalse(trueOrFalse => !trueOrFalse);
     });
 
     socketRef.current.on('coloring', () => {
-        const span = document.getElementById(`player2_${counterRef2.current}`);
-        span.classList.add('beColored');
-        counterRef2.current += 1;
+      const span = document.getElementById(`player2_${counterRef2.current}`);
+      span.classList.add('beColored');
+      counterRef2.current += 1;
     });
 
     socketRef.current.on('changeString', () => {
@@ -102,7 +108,7 @@ export default function App() {
       counterRef2.current = 0;
       setTrueOrFalse(trueOrFalse => !trueOrFalse);
     })
-    
+
     return () => socketRef.current.disconnect();
   }, []);
 
