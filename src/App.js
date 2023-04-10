@@ -3,23 +3,15 @@ import './App.css';
 import Game from './Game';
 import { io } from 'socket.io-client';
 
-function Home({ userName, setUserName, trueOrFalse, matching }) {
+function Home({ userName, setUserName, trueOrFalse, matching, matchingStop }) {
+  const [matchingTOF, setMatchingTOF] = useState(true);
+
   function detectUserName() {
     const userName = document.getElementById('Home-username-text');
     if (!userName.value) {
       alert('ユーザー名を入力してください');
     } else {
       return setUserName(() => userName.value);
-    }
-  }
-
-  function matchingAndRemove() {
-    if (!userName) {
-      alert('ユーザー名を登録してください');
-    } else {
-      matching();
-      const div = document.getElementById('Home-matching');
-      div.innerHTML = '<span>マッチング中...</span>';
     }
   }
 
@@ -32,11 +24,33 @@ function Home({ userName, setUserName, trueOrFalse, matching }) {
   }
 
   function HomeMatchingButton() {
-    return (
-      <div id='Home-matching'>
-        <input type="button" value="マッチ開始" id="Home-matching-button" onClick={matchingAndRemove} />
-      </div>
-    );
+    function startMatching(){
+      if (!userName){
+        alert('ユーザー名を登録してください。');
+      } else {
+        matching();
+        setMatchingTOF(matchingTOF => !matchingTOF);
+      }
+    }
+
+    function cancelMatching(){
+      matchingStop();
+      setMatchingTOF(matchingTOF => !matchingTOF);
+    }
+
+    if (matchingTOF) {
+      return (
+        <div id="Home-matching">
+          <input type="button" value="マッチ開始" onClick={startMatching} />
+        </div>
+      );
+    } else {
+      return (
+        <div id="Home-matching">
+          <input type="button" value="マッチキャンセル" onClick={cancelMatching} />
+        </div>
+      );
+    }
   }
 
   if (trueOrFalse) {
@@ -141,6 +155,14 @@ export default function App() {
     setTrueOrFalse(trueOrFalse => !trueOrFalse);
   }
 
+  function matchingStop() {
+    socketRef.current.emit('matchingStop', {
+      token: tokenRef.current,
+      roomId: roomIdRef.current,
+    });
+    roomIdRef.current = null;
+  }
+
   return (
     <div id="App">
       <Home
@@ -148,6 +170,7 @@ export default function App() {
         setUserName={setUserName}
         trueOrFalse={trueOrFalse}
         matching={matching}
+        matchingStop={matchingStop}
       />
       <Game
         trueOrFalse={trueOrFalse}
