@@ -24,8 +24,8 @@ function Home({ userName, setUserName, trueOrFalse, matching, matchingStop }) {
   }
 
   function HomeMatchingButton() {
-    function startMatching(){
-      if (!userName){
+    function startMatching() {
+      if (!userName) {
         alert('ユーザー名を登録してください。');
       } else {
         matching();
@@ -33,7 +33,7 @@ function Home({ userName, setUserName, trueOrFalse, matching, matchingStop }) {
       }
     }
 
-    function cancelMatching(){
+    function cancelMatching() {
       matchingStop();
       setMatchingTOF(matchingTOF => !matchingTOF);
     }
@@ -88,7 +88,7 @@ export default function App() {
 
   useEffect(() => {
     // ipの取得がわからないので、環境変える都度ローカルアドレスを変える
-    socketRef.current = io(`http://192.168.11.15:3001`);
+    socketRef.current = io(`http://172.20.107.101:3001`);
 
     socketRef.current.on('socket_id', data => {
       tokenRef.current = data;
@@ -163,6 +163,12 @@ export default function App() {
     roomIdRef.current = null;
   }
 
+  function endMatching() {
+    socketRef.current.emit("endMatching", {
+      roomId: roomIdRef.current,
+    })
+  }
+
   return (
     <div id="App">
       <Home
@@ -181,6 +187,7 @@ export default function App() {
         strCounter2={strCounter2}
         changePartnerString={changePartnerString}
         backHome={backHome}
+        endMatching={endMatching}
       />
     </div>
   );
