@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { useKey } from 'rooks';
 
-function Game({ trueOrFalse, userName, partnerNameRef, typingStr, beColored, strCounter2, changePartnerString, backHome, endMatching }) {
+function Game({ trueOrFalse, userName, partnerNameRef, typingStr, beColored, strCounter2, changePartnerString, backHome, matchingStop }) {
   useKey(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'], e => {
     if (!trueOrFalse) keyDownFunction(e);
   });
@@ -25,7 +25,7 @@ function Game({ trueOrFalse, userName, partnerNameRef, typingStr, beColored, str
           setStrCounter1(strCounter1 => 0);
           counterRef1.current = 0;
           backHome();
-          endMatching();
+          matchingStop();
         }
       }
     }
@@ -63,9 +63,18 @@ function Game({ trueOrFalse, userName, partnerNameRef, typingStr, beColored, str
     )
   }
 
+  function Result(){
+    return (
+      <div id="result">
+        ゲーム終了！
+      </div>
+    );
+  }
+
   if (!trueOrFalse) {
     return (
       <div id="Game">
+        <Result />
         <div id="player1" className="player">
           <div className="playerName">
             {userName}

@@ -4,6 +4,15 @@ h1 {
     text-align: center;
 }
 
+#result {
+    position: absolute;
+    top: 25%;
+    left: 25%;
+    width: 50vw;
+    height: 50vh;
+    background-color: brown;
+}
+
 #Home-username, #Home-matching, #explain {
     margin: 20px;
     text-align: center;

@@ -3,8 +3,7 @@ import './App.css';
 import Game from './Game';
 import { io } from 'socket.io-client';
 
-function Home({ userName, setUserName, trueOrFalse, matching, matchingStop }) {
-  const [matchingTOF, setMatchingTOF] = useState(true);
+function Home({ userName, setUserName, trueOrFalse, matching, matchingStop, matchingTOF, setMatchingTOF }) {
 
   function detectUserName() {
     const userName = document.getElementById('Home-username-text');
@@ -85,10 +84,11 @@ export default function App() {
   const [userName, setUserName] = useState(null);
   const [typingStr, setTypingStr] = useState(null);
   const [trueOrFalse, setTrueOrFalse] = useState(true);
+  const [matchingTOF, setMatchingTOF] = useState(true);
 
   useEffect(() => {
     // ipの取得がわからないので、環境変える都度ローカルアドレスを変える
-    socketRef.current = io(`http://172.20.107.101:3001`);
+    socketRef.current = io(`http://10.87.182.76:3001`);
 
     socketRef.current.on('socket_id', data => {
       tokenRef.current = data;
@@ -104,6 +104,7 @@ export default function App() {
         : partnerNameRef.current = room_info.user1.userName;
       setTypingStr(() => data.typingString);
       setTrueOrFalse(trueOrFalse => !trueOrFalse);
+      setMatchingTOF(matchingTOF => !matchingTOF);
     });
 
     socketRef.current.on('coloring', () => {
@@ -163,12 +164,6 @@ export default function App() {
     roomIdRef.current = null;
   }
 
-  function endMatching() {
-    socketRef.current.emit("endMatching", {
-      roomId: roomIdRef.current,
-    })
-  }
-
   return (
     <div id="App">
       <Home
@@ -177,6 +172,8 @@ export default function App() {
         trueOrFalse={trueOrFalse}
         matching={matching}
         matchingStop={matchingStop}
+        matchingTOF={matchingTOF}
+        setMatchingTOF={setMatchingTOF}
       />
       <Game
         trueOrFalse={trueOrFalse}
@@ -187,7 +184,7 @@ export default function App() {
         strCounter2={strCounter2}
         changePartnerString={changePartnerString}
         backHome={backHome}
-        endMatching={endMatching}
+        matchingStop={matchingStop}
       />
     </div>
   );
