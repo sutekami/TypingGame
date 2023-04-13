@@ -85,10 +85,11 @@ export default function App() {
   const [typingStr, setTypingStr] = useState(null);
   const [trueOrFalse, setTrueOrFalse] = useState(true);
   const [matchingTOF, setMatchingTOF] = useState(true);
+  const [resultTOF, setResultTOF] = useState(false);
 
   useEffect(() => {
     // ipの取得がわからないので、環境変える都度ローカルアドレスを変える
-    socketRef.current = io(`http://10.87.182.76:3001`);
+    socketRef.current = io(`http://172.20.182.252:3001`);
 
     socketRef.current.on('socket_id', data => {
       tokenRef.current = data;
@@ -118,10 +119,8 @@ export default function App() {
       setStrCounter2(strCounter2 => strCounter2 + 1);
     });
 
-    socketRef.current.on('backHome', () => {
-      setStrCounter2(() => 0);
-      counterRef2.current = 0;
-      setTrueOrFalse(trueOrFalse => !trueOrFalse);
+    socketRef.current.on('changeResult', () => {
+      setResultTOF(resultTOF => !resultTOF);
     })
 
     return () => socketRef.current.disconnect();
@@ -149,10 +148,8 @@ export default function App() {
   }
 
   function backHome() {
-    socketRef.current.emit('backHome', {
-      token: tokenRef.current,
-      roomId: roomIdRef.current
-    });
+    setStrCounter2(() => 0);
+    counterRef2.current = 0;
     setTrueOrFalse(trueOrFalse => !trueOrFalse);
   }
 
@@ -162,6 +159,13 @@ export default function App() {
       roomId: roomIdRef.current,
     });
     roomIdRef.current = null;
+  }
+
+  function changeResult() {
+    socketRef.current.emit('changeResult', {
+      token: tokenRef.current,
+      roomId: roomIdRef.current,
+    })
   }
 
   return (
@@ -185,6 +189,9 @@ export default function App() {
         changePartnerString={changePartnerString}
         backHome={backHome}
         matchingStop={matchingStop}
+        changeResult={changeResult}
+        resultTOF={resultTOF}
+        setResultTOF={setResultTOF}
       />
     </div>
   );

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { useKey } from 'rooks';
 
-function Game({ trueOrFalse, userName, partnerNameRef, typingStr, beColored, strCounter2, changePartnerString, backHome, matchingStop }) {
+function Game({ trueOrFalse, userName, partnerNameRef, typingStr, beColored, strCounter2, changePartnerString, backHome, matchingStop, changeResult, resultTOF, setResultTOF }) {
   useKey(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'], e => {
     if (!trueOrFalse) keyDownFunction(e);
   });
@@ -22,10 +22,8 @@ function Game({ trueOrFalse, userName, partnerNameRef, typingStr, beColored, str
           counterRef1.current = 0;
           setStrCounter1(strCounter1 => strCounter1 += 1);
         } else if (counterRef1.current === counterMaxRef.current && strCounter1 === 2) {
-          setStrCounter1(strCounter1 => 0);
-          counterRef1.current = 0;
-          backHome();
-          matchingStop();
+          changeResult();
+          setResultTOF(resultTOF => !resultTOF);
         }
       }
     }
@@ -63,12 +61,23 @@ function Game({ trueOrFalse, userName, partnerNameRef, typingStr, beColored, str
     )
   }
 
-  function Result(){
-    return (
-      <div id="result">
-        ゲーム終了！
-      </div>
-    );
+  function Result() {
+    function resultFunction() {
+      setStrCounter1(strCounter1 => 0);
+      counterRef1.current = 0;
+      backHome();
+      matchingStop();
+      setResultTOF(resultTOF => !resultTOF);
+    }
+
+    if (resultTOF) {
+      return (
+        <div id="result">
+          ゲーム終了！
+          <input type="button" value="ホームに戻る" onClick={resultFunction} />
+        </div>
+      );
+    }
   }
 
   if (!trueOrFalse) {
