@@ -89,7 +89,7 @@ export default function App() {
 
   useEffect(() => {
     // ipの取得がわからないので、環境変える都度ローカルアドレスを変える
-    socketRef.current = io(`http://172.20.182.252:3001`);
+    socketRef.current = io(`http://192.168.11.2:3001`);
 
     socketRef.current.on('socket_id', data => {
       tokenRef.current = data;
